@@ -81,10 +81,6 @@ export function OrgChartDemo() {
   return (
     <main className="app-shell">
       <header className="topbar">
-        <a className="brand" href="#" aria-label="Crouton home">
-          <span className="brand-mark" aria-hidden="true"><i /><i /><i /></span>
-          crouton
-        </a>
         <label className="company-picker">
           <span className="company-label">Company</span>
           <span className="company-select">
@@ -103,7 +99,6 @@ export function OrgChartDemo() {
             </svg>
           </span>
         </label>
-        <button className="avatar" aria-label="Open account menu">EC</button>
       </header>
 
       <section className="workspace">
