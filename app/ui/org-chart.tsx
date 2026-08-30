@@ -167,16 +167,21 @@ export function OrgChart({
       node.style("label", `${employee.name}\n${employee.role}`);
     });
 
-    // Highlight only the employee named by the event. Reports whose manager
-    // changed are deliberately excluded even though their edges also changed.
-    if (highlightedEmployeeId !== undefined) {
+    // Reapply after animated layout completion as well as immediately. This
+    // keeps structural events from losing their outline during layout setup.
+    const applyEventHighlight = () => {
+      if (highlightedEmployeeId === undefined) return;
       cy.getElementById(String(highlightedEmployeeId)).addClass(
         "event-highlight",
       );
-    }
-
-    // Animate the new graph while retaining its event highlight until the next update.
+    };
+    cy.one("layoutstop", applyEventHighlight);
     runLayout(cy, currentIds.size > 0);
+
+    // Highlight only the employee named by the event. Reports whose manager
+    // changed are deliberately excluded even though their edges also changed.
+    applyEventHighlight();
+
     const addedNodes = addedElements.nodes();
     const addedEdges = addedElements.edges();
     addedNodes.animate(
@@ -193,7 +198,10 @@ export function OrgChart({
       );
     }, EDGE_REVEAL_DELAY);
 
-    return () => window.clearTimeout(edgeTimer);
+    return () => {
+      window.clearTimeout(edgeTimer);
+      cy.off("layoutstop", applyEventHighlight);
+    };
   }, [highlightedEmployeeId, organization]);
 
   return (
